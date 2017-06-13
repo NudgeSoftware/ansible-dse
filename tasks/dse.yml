@@ -1,18 +1,38 @@
-- name: Adds datastax repos key
-  apt_key:
-    url: https://debian.datastax.com/debian/repo_key
+- block:
+  - name: Adds datastax debian repo key
+    apt_key:
+      url: https://debian.datastax.com/debian/repo_key
+  - name: Adds datastax debian repo
+    apt_repository:
+      repo: "deb https://{{ dse_repository_login }}:{{ dse_repository_password }}@debian.datastax.com/enterprise stable main"
+      update_cache: yes
+  - name: Installs DSE
+    apt:
+      name: "{{dse_package}}"
+      state: present
+    notify:
+      - Restart DSE
+  when: ansible_os_family == "Debian"
 
-- name: Adds datastax repos
-  apt_repository:
-    repo: "deb https://{{ dse_repository_login }}:{{ dse_repository_password }}@debian.datastax.com/enterprise stable main"
-    update_cache: yes
-
-- name: Installs DSE
-  apt:
-    name: dse-full
-    state: present
-  notify:
-    - Restart DSE
+- block:
+  - name: Adds datastax rpm repo key
+    rpm_key:
+      key: https://rpm.datastax.com/rpm/repo_key
+  - name: Adds datastax rpm repo
+    yum_repository:
+      name: dse
+      description: Datastax YUM repo
+      baseurl: "https://rpm.datastax.com/enterprise"
+      username: "{{ dse_repository_login }}"
+      password: "{{ dse_repository_password }}"
+      enabled: yes
+  - name: Installs DSE
+    yum:
+      name: "{{dse_package}}"
+      state: present
+    notify:
+      - Restart DSE
+  when: ansible_os_family == "RedHat"
 
 - name: Adds cassandra.yaml
   template:

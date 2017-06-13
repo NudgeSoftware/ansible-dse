@@ -20,6 +20,7 @@ dse_data_file_directories:
 # Install options
 dse_install_opscenter: False
 dse_install_dse: False
+dse_package: dse-full
 
 # Network settings
 dse_listen_address: False

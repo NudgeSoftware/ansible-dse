@@ -21,3 +21,4 @@
   fail:
     msg: "You can not define both dse_rpc_address and dse_rpc_interface"
   when: dse_rpc_address != False and dse_rpc_interface != False
+
