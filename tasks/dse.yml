@@ -15,10 +15,10 @@
   when: ansible_os_family == "Debian"
 
 - block:
-  - name: Adds datastax rpm repo key
+  - name: Add datastax rpm repo key
     rpm_key:
       key: https://rpm.datastax.com/rpm/repo_key
-  - name: Adds datastax rpm repo
+  - name: Add datastax rpm repo
     yum_repository:
       name: dse
       description: Datastax YUM repo
@@ -26,7 +26,7 @@
       username: "{{ dse_repository_login }}"
       password: "{{ dse_repository_password }}"
       enabled: yes
-  - name: Installs DSE
+  - name: Install DSE
     yum:
       name: "{{dse_package}}"
       state: present
@@ -34,7 +34,7 @@
       - Restart DSE
   when: ansible_os_family == "RedHat"
 
-- name: Adds cassandra.yaml
+- name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2
     dest: /etc/dse/cassandra/cassandra.yaml
@@ -46,7 +46,7 @@
   notify:
     - Restart DSE
 
-- name: Adds cassandra-env.sh
+- name: Update cassandra-env.sh
   template:
     src: cassandra-env.sh.j2
     dest: /etc/dse/cassandra/cassandra-env.sh
@@ -58,7 +58,7 @@
   notify:
     - Restart DSE
 
-- name: Creates DSE home directory
+- name: Create DSE home directory
   file:
     path: "{{ dse_home }}"
     state: directory
@@ -66,7 +66,7 @@
     group: cassandra
     mode: 0755
 
-- name: Installs agent
+- name: Install agent
   apt:
     name: datastax-agent
     state: present
@@ -74,7 +74,7 @@
   notify:
     - Restart DSE agent
 
-- name: Configures agent
+- name: Configure agent
   template:
     src: address.yaml.j2
     dest: /var/lib/datastax-agent/conf/address.yaml
@@ -87,7 +87,7 @@
   notify:
     - Restart DSE agent
 
-- name: Configures agent
+- name: Configure agent
   template:
     src: datastax-agent-env.sh.j2
     dest: /etc/datastax-agent/datastax-agent-env.sh
