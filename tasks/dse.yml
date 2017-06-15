@@ -34,13 +34,25 @@
       - Restart DSE
   when: ansible_os_family == "RedHat"
 
-- name: create-folders.yml
+- include: create-folders.yml
   when: dse_install_dse
 
 - name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2
     dest: /etc/dse/cassandra/cassandra.yaml
+    backup: yes
+    owner: cassandra
+    group: cassandra
+    mode: 0644
+  tags: ["config","dse:config"]
+  notify:
+    - Restart DSE
+
+- name: Update cassandra-rackdc.properties
+  template:
+    src: cassandra-rackdc.properties.j2
+    dest: /etc/dse/cassandra/cassandra-rackdc.properties
     backup: yes
     owner: cassandra
     group: cassandra

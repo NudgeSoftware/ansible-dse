@@ -5,7 +5,9 @@ dse_saved_caches_directory: "{{ dse_home }}/saved_caches"
 # Cassandra setup -- all standard things from cassandra.yaml
 # defaults are in cassandra.yaml.j2
 dse_cassandra:
-  cluster_name: "Test Cluster"
+  dc: DC1
+  rack: RAC1
+  cluster_name: Test Cluster
   data_file_directories:
     - "{{ dse_home }}/data"
   commitlog_directory: "{{ dse_home }}/commitlog"
@@ -22,12 +24,6 @@ dse_cassandra:
 dse_install_opscenter: False
 dse_install_dse: False
 dse_package: dse-full
-
-# Network settings
-dse_listen_address: False
-dse_listen_interface: False
-dse_rpc_address: False
-dse_rpc_interface: False
 
 # Datastax agent configuration
 dse_agent_memory: 128M

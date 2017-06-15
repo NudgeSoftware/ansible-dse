@@ -5,10 +5,4 @@
   with_items:
     - dse_repository_login
     - dse_repository_password
-    - dse_seed_group
-
-- name: Checks that dse_rpc_address & dse_rpc_interface are not both defined
-  fail:
-    msg: "You can not define both dse_rpc_address and dse_rpc_interface"
-  when: dse_rpc_address != False and dse_rpc_interface != False
 
