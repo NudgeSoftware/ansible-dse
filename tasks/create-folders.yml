@@ -6,15 +6,34 @@
     cassandra_saved_caches_directory: "{{ dse_cassandra.saved_caches_directory|d(dse_home ~ '/saved_caches') }}"
     cassandra_hints_directory: "{{ dse_cassandra.hints_directory|d(dse_home ~ '/hints') }}"
 
+- name: Create DSE home, hints and saved caches directories
+  file:
+    path: "{{ dse_home }}"
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+  with_items: 
+    - "{{ dse_home }}"
+    - "{{ cassandra_saved_caches_directory }}"
+    - "{{ cassandra_hints_directory }}"    
+
 - name: Ensure cassandra data directories exist
-  file: path={{ item }} state=directory owner=cassandra group=cassandra
+  file:
+    path: "{{ dse_home }}"
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0755
   with_items: "{{ cassandra_data_file_directories }}"
 
-- name: Ensure cassandra directories exist
-  file: path={{ item }} state=directory owner=cassandra group=cassandra mode=0644
+- name: Ensure other cassandra directories exist
+  file:
+    path: "{{ dse_home }}"
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0644
   with_items: 
     - "{{ cassandra_commitlog_directory }}"
     - "{{ cassandra_cdc_raw_directory }}"
-    - "{{ cassandra_saved_caches_directory }}"
-    - "{{ cassandra_hints_directory }}"
-    

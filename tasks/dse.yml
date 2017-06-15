@@ -73,13 +73,12 @@
   notify:
     - Restart DSE
 
-- name: Create DSE home directory
-  file:
-    path: "{{ dse_home }}"
-    state: directory
-    owner: cassandra
-    group: cassandra
-    mode: 0755
+# - name: Copy Systemd File for Instance
+#   template: src=systemd/cassandra.j2 dest={{instance_sysd_script}} mode=0644 force=yes
+#   when: use_system_d
+#   notify:
+#   - reload systemd configuration
+#   - restart cassandra
 
 - name: Install agent
   apt:
