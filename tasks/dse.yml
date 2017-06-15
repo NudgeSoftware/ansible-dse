@@ -34,6 +34,9 @@
       - Restart DSE
   when: ansible_os_family == "RedHat"
 
+- name: create-folders.yml
+  when: dse_install_dse
+
 - name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2

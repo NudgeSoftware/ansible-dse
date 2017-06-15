@@ -1,0 +1,20 @@
+- name: capture cassandra directories
+  set_fact:
+    cassandra_data_file_directories: "{{ dse_cassandra.data_file_directories|d([dse_home ~ '/data']) }}"
+    cassandra_commitlog_directory: "{{ dse_cassandra.commitlog_directory|d(dse_home ~ '/commitlog') }}"
+    cassandra_cdc_raw_directory: "{{ dse_cassandra.cdc_raw_directory|d(dse_home ~ '/cdc_raw') }}"
+    cassandra_saved_caches_directory: "{{ dse_cassandra.saved_caches_directory|d(dse_home ~ '/saved_caches') }}"
+    cassandra_hints_directory: "{{ dse_cassandra.hints_directory|d(dse_home ~ '/hints') }}"
+
+- name: Ensure cassandra data directories exist
+  file: path={{ item }} state=directory owner=cassandra group=cassandra
+  with_items: "{{ cassandra_data_file_directories }}"
+
+- name: Ensure cassandra directories exist
+  file: path={{ item }} state=directory owner=cassandra group=cassandra mode=0644
+  with_items: 
+    - "{{ cassandra_commitlog_directory }}"
+    - "{{ cassandra_cdc_raw_directory }}"
+    - "{{ cassandra_saved_caches_directory }}"
+    - "{{ cassandra_hints_directory }}"
+    
