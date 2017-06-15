@@ -24,7 +24,7 @@ cluster_name: {{ dse_cassandra.cluster_name }}
 # multiple tokens per node, see http://wiki.apache.org/cassandra/Operations
 {% if dse_cassandra.num_tokens is undefined %}
 # num_tokens: 128
-{%- else %}
+{% else %}
 num_tokens: {{ dse_cassandra.num_tokens }}
 {% endif %}
 
@@ -39,7 +39,7 @@ num_tokens: {{ dse_cassandra.num_tokens }}
 # Only supported with the Murmur3Partitioner.
 {% if dse_cassandra.allocate_tokens_for_local_replication_factor is undefined %}
 # allocate_tokens_for_local_replication_factor: 3
-{%- else %}
+{% else %}
 allocate_tokens_for_local_replication_factor: {{ dse_cassandra.allocate_tokens_for_local_replication_factor }}
 {% endif %}
 
@@ -49,7 +49,7 @@ allocate_tokens_for_local_replication_factor: {{ dse_cassandra.allocate_tokens_f
 # that do not have vnodes enabled.
 {% if dse_cassandra.initial_token is undefined or dse_cassandra.initial_token|length == 0 %}
 # initial_token:
-{%- else %}
+{% else %}
 initial_token: {{ dse_cassandra.initial_token|join(',') }}
 {% endif %}
 
@@ -63,7 +63,7 @@ hinted_handoff_enabled: {{ dse_cassandra.hinted_handoff_enabled|d(true) }}
 #hinted_handoff_disabled_datacenters:
 #    - DC1
 #    - DC2
-{%- else %}
+{% else %}
 hinted_handoff_disabled_datacenters:
 {{ dse_cassandra.hinted_handoff_disabled_datacenters|to_nice_yaml }}
 {% endif %}
@@ -104,7 +104,7 @@ max_hints_file_size_in_mb: {{ dse_cassandra.max_hints_file_size_in_mb|d(128) }}
 #   - class_name: LZ4Compressor
 #     parameters:
 #         -
-{%- else %}
+{% else %}
 hints_compression:
 {{ dse_cassandra.hints_compression|to_nice_yaml }}
 {% endif %}
@@ -174,7 +174,7 @@ roles_validity_in_ms: {{ dse_cassandra.roles_validity_in_ms|d(2000) }}
 # Defaults to the same value as roles_validity_in_ms.
 {% if dse_cassandra.roles_update_interval_in_ms is undefined %}
 # roles_update_interval_in_ms: 2000
-{%- else %}
+{% else %}
 roles_update_interval_in_ms: {{ dse_cassandra.roles_update_interval_in_ms }}
 {% endif %}
 
@@ -192,7 +192,7 @@ permissions_validity_in_ms: {{ dse_cassandra.permissions_validity_in_ms|d(2000) 
 # Defaults to the same value as permissions_validity_in_ms.
 {% if dse_cassandra.permissions_update_interval_in_ms is undefined %}
 # permissions_update_interval_in_ms: 2000
-{%- else %}
+{% else %}
 permissions_update_interval_in_ms: {{ dse_cassandra.permissions_update_interval_in_ms }}
 {% endif %}
 
@@ -215,7 +215,7 @@ credentials_validity_in_ms: {{ dse_cassandra.credentials_validity_in_ms|d(2000) 
 # Defaults to the same value as credentials_validity_in_ms.
 {% if dse_cassandra.credentials_update_interval_in_ms is undefined %}
 # credentials_update_interval_in_ms: 2000
-{%- else %}
+{% else %}
 credentials_update_interval_in_ms: {{ dse_cassandra.credentials_update_interval_in_ms }}
 {% endif %}
 
@@ -333,7 +333,7 @@ key_cache_save_period: {{ dse_cassandra.key_cache_save_period|d(14400) }}
 # Disabled by default, meaning all keys are going to be saved
 {% if dse_cassandra.key_cache_keys_to_save is undefined %}
 # key_cache_keys_to_save: 100
-{%- else %}
+{% else %}
 key_cache_keys_to_save: {{ dse_cassandra.key_cache_keys_to_save }}
 {% endif %}
 
@@ -344,7 +344,7 @@ key_cache_keys_to_save: {{ dse_cassandra.key_cache_keys_to_save }}
 #                                                         in previous releases of Cassandra.
 {% if dse_cassandra.row_cache_class_name is undefined %}
 # row_cache_class_name: org.apache.cassandra.cache.OHCProvider
-{%- else %}
+{% else %}
 row_cache_class_name: {{ dse_cassandra.row_cache_class_name }}
 {% endif %}
 
@@ -372,7 +372,7 @@ row_cache_save_period: {{ dse_cassandra.row_cache_save_period|d(0) }}
 # Specify 0 (which is the default), meaning all keys are going to be saved
 {% if dse_cassandra.row_cache_keys_to_save is undefined %}
 # row_cache_keys_to_save: 100
-{%- else %}
+{% else %}
 row_cache_keys_to_save: {{ dse_cassandra.row_cache_keys_to_save }}
 {% endif %}
 
@@ -402,7 +402,7 @@ counter_cache_save_period: {{ dse_cassandra.counter_cache_save_period|d(7200) }}
 # Disabled by default, meaning all keys are going to be saved
 {% if dse_cassandra.counter_cache_keys_to_save is undefined %}
 # counter_cache_keys_to_save: 100
-{%- else %}
+{% else %}
 counter_cache_keys_to_save: {{ dse_cassandra.counter_cache_keys_to_save }}
 {% endif %}
 
@@ -428,7 +428,7 @@ saved_caches_directory: {{ cassandra_saved_caches_directory }}
 {% if dse_cassandra.commitlog_sync_batch_window_in_ms is defined %}
 commitlog_sync: batch
 commitlog_sync_batch_window_in_ms: {{ dse_cassandra.commitlog_sync_batch_window_in_ms }}
-{%- else %}
+{% else %}
 commitlog_sync: periodic
 commitlog_sync_period_in_ms: {{ dse_cassandra.commitlog_sync_period_in_ms|d(10000) }}
 {% endif %}
@@ -458,7 +458,7 @@ commitlog_segment_size_in_mb: {{ dse_cassandra.commitlog_segment_size_in_mb|d(32
 #   - class_name: LZ4Compressor
 #     parameters:
 #
-{%- else %}
+{% else %}
 commitlog_compression:
 {{ dse_cassandra.commitlog_compression|to_nice_yaml }}
 {% endif %}
@@ -477,7 +477,7 @@ seed_provider:
           # seeds is actually a comma-delimited list of addresses.
           # Ex: "<ip1>,<ip2>,<ip3>"
           - seeds: "127.0.0.1"
-{%- else %}
+{% else %}
 {{ dse_cassandra.seed_provider|to_nice_yaml }}
 {% endif %}
 
@@ -506,7 +506,7 @@ concurrent_materialized_view_writes: {{ dse_cassandra.concurrent_materialized_vi
 # to the memory allocated for heap. Memory is only allocated as needed.
 {% if dse_cassandra.file_cache_size_in_mb is undefined %}
 # file_cache_size_in_mb: 512
-{%- else %}
+{% else %}
 file_cache_size_in_mb: {{ dse_cassandra.file_cache_size_in_mb }}
 {% endif %}
 
@@ -515,7 +515,7 @@ file_cache_size_in_mb: {{ dse_cassandra.file_cache_size_in_mb }}
 # file_cache_size_in_mb, beyond which it will not cache buffers but allocate on request.
 {% if dse_cassandra.buffer_pool_use_heap_if_exhausted is undefined %}
 # buffer_pool_use_heap_if_exhausted: true
-{%- else %}
+{% else %}
 buffer_pool_use_heap_if_exhausted: {{ dse_cassandra.buffer_pool_use_heap_if_exhausted }}
 {% endif %}
 
@@ -525,7 +525,7 @@ buffer_pool_use_heap_if_exhausted: {{ dse_cassandra.buffer_pool_use_heap_if_exha
 # spinning (for spinning disks)
 {% if dse_cassandra.disk_optimization_strategy is undefined %}
 # disk_optimization_strategy: ssd
-{%- else %}
+{% else %}
 disk_optimization_strategy: {{ dse_cassandra.disk_optimization_strategy }}
 {% endif %}
 
@@ -535,12 +535,12 @@ disk_optimization_strategy: {{ dse_cassandra.disk_optimization_strategy }}
 # If omitted, Cassandra will set both to 1/4 the size of the heap.
 {% if dse_cassandra.memtable_heap_space_in_mb is undefined %}
 # memtable_heap_space_in_mb: 2048
-{%- else %}
+{% else %}
 memtable_heap_space_in_mb: {{ dse_cassandra.memtable_heap_space_in_mb }}
 {% endif %}
 {% if dse_cassandra.memtable_offheap_space_in_mb is undefined %}
 # memtable_offheap_space_in_mb: 2048
-{%- else %}
+{% else %}
 memtable_offheap_space_in_mb: {{ dse_cassandra.memtable_offheap_space_in_mb }}
 {% endif %}
 
@@ -553,7 +553,7 @@ memtable_offheap_space_in_mb: {{ dse_cassandra.memtable_offheap_space_in_mb }}
 # memtable_cleanup_threshold defaults to 1 / (memtable_flush_writers + 1)
 {% if dse_cassandra.memtable_cleanup_threshold is undefined %}
 # memtable_cleanup_threshold: 0.11
-{%- else %}
+{% else %}
 memtable_cleanup_threshold: {{ dse_cassandra.memtable_cleanup_threshold }}
 {% endif %}
 
@@ -574,7 +574,7 @@ memtable_allocation_type: {{ dse_cassandra.memtable_cleanup_threshold|d('heap_bu
 #
 {% if dse_cassandra.commitlog_total_space_in_mb is undefined %}
 # commitlog_total_space_in_mb: 8192
-{%- else %}
+{% else %}
 commitlog_total_space_in_mb: {{ dse_cassandra.commitlog_total_space_in_mb }}
 {% endif %}
 
@@ -607,7 +607,7 @@ commitlog_total_space_in_mb: {{ dse_cassandra.commitlog_total_space_in_mb }}
 #
 {% if dse_cassandra.memtable_flush_writers is undefined %}
 # memtable_flush_writers: 2
-{%- else %}
+{% else %}
 memtable_flush_writers: {{ dse_cassandra.memtable_flush_writers }}
 {% endif %}
 
@@ -621,7 +621,7 @@ memtable_flush_writers: {{ dse_cassandra.memtable_flush_writers }}
 # of the drive where cdc_raw_directory resides.
 {% if dse_cassandra.cdc_total_space_in_mb is undefined %}
 # cdc_total_space_in_mb: 4096
-{%- else %}
+{% else %}
 cdc_total_space_in_mb: {{ dse_cassandra.cdc_total_space_in_mb }}
 {% endif %}
 
@@ -630,7 +630,7 @@ cdc_total_space_in_mb: {{ dse_cassandra.cdc_total_space_in_mb }}
 # new space for cdc-tracked tables has been made available. Default to 250ms
 {% if dse_cassandra.cdc_free_space_check_interval_ms is undefined %}
 # cdc_free_space_check_interval_ms: 250
-{%- else %}
+{% else %}
 cdc_free_space_check_interval_ms: {{ dse_cassandra.cdc_free_space_check_interval_ms }}
 {% endif %}
 
@@ -686,12 +686,12 @@ ssl_storage_port: {{ dse_cassandra.ssl_storage_port|d(7001) }}
 # listen_interface: eth0
 {% if dse_cassandra.listen_address is defined %}
 listen_address: {{ dse_cassandra.listen_address }}
-{%- else %}
+{% else %}
 listen_interface: {{ dse_cassandra.listen_interface|d('eth0') }}
 {% endif %}
 {% if dse_cassandra.listen_interface_prefer_ipv6 is undefined %}
 # listen_interface_prefer_ipv6: false
-{%- else %}
+{% else %}
 listen_interface_prefer_ipv6: {{ dse_cassandra.listen_interface_prefer_ipv6 }}
 {% endif %}
 
@@ -699,7 +699,7 @@ listen_interface_prefer_ipv6: {{ dse_cassandra.listen_interface_prefer_ipv6 }}
 # Leaving this blank will set it to the same value as listen_address
 {% if dse_cassandra.broadcast_address is undefined %}
 # broadcast_address: 1.2.3.4
-{%- else %}
+{% else %}
 broadcast_address: {{ dse_cassandra.broadcast_address }}
 {% endif %}
 
@@ -711,7 +711,7 @@ broadcast_address: {{ dse_cassandra.broadcast_address }}
 # routes  between the public and private networks such as EC2.
 {% if dse_cassandra.listen_on_broadcast_address is undefined %}
 # listen_on_broadcast_address: false
-{%- else %}
+{% else %}
 listen_on_broadcast_address: {{ dse_cassandra.listen_on_broadcast_address }}
 {% endif %}
 
@@ -735,7 +735,7 @@ native_transport_port: {{ dse_cassandra.native_transport_port|d(9042) }}
 # keeping native_transport_port unencrypted.
 {% if dse_cassandra.native_transport_port_ssl is undefined %}
 # native_transport_port_ssl: 9142
-{%- else %}
+{% else %}
 native_transport_port_ssl: {{ dse_cassandra.native_transport_port_ssl }}
 {% endif %}
 
@@ -745,7 +745,7 @@ native_transport_port_ssl: {{ dse_cassandra.native_transport_port_ssl }}
 # after 30 seconds).
 {% if dse_cassandra.native_transport_max_threads is undefined %}
 # native_transport_max_threads: 128
-{%- else %}
+{% else %}
 native_transport_max_threads: {{ dse_cassandra.native_transport_max_threads }}
 {% endif %}
 
@@ -755,7 +755,7 @@ native_transport_max_threads: {{ dse_cassandra.native_transport_max_threads }}
 # you may want to adjust max_value_size_in_mb accordingly.
 {% if dse_cassandra.native_transport_max_frame_size_in_mb is undefined %}
 # native_transport_max_frame_size_in_mb: 256
-{%- else %}
+{% else %}
 native_transport_max_frame_size_in_mb: {{ dse_cassandra.native_transport_max_frame_size_in_mb }}
 {% endif %}
 # The maximum number of concurrent client connections.
@@ -791,12 +791,12 @@ start_rpc: {{ dse_cassandra.start_rpc|d(true) }}
 # rpc_interface: eth1
 {% if dse_cassandra.rpc_address is defined %}
 rpc_address: {{ dse_cassandra.rpc_address }}
-{%- else %}
+{% else %}
 rpc_interface: {{ dse_cassandra.rpc_interface|d('eth0') }}
 {% endif %}
 {% if dse_cassandra.rpc_interface_prefer_ipv6 is undefined %}
 # rpc_interface_prefer_ipv6: false
-{%- else %}
+{% else %}
 rpc_interface_prefer_ipv6: {{ dse_cassandra.rpc_interface_prefer_ipv6 }}
 {% endif %}
 
@@ -809,7 +809,7 @@ rpc_port: {{ dse_cassandra.rpc_port|d(9160) }}
 # be set.
 {% if dse_cassandra.broadcast_rpc_address is undefined %}
 # broadcast_rpc_address: 1.2.3.4
-{%- else %}
+{% else %}
 broadcast_rpc_address: {{ dse_cassandra.broadcast_rpc_address }}
 {% endif %}
 
@@ -848,12 +848,12 @@ rpc_server_type: {{ dse_cassandra.rpc_server_type|d('sync') }}
 #
 {% if dse_cassandra.rpc_min_threads is undefined %}
 # rpc_min_threads: 16
-{%- else %}
+{% else %}
 rpc_min_threads: {{ dse_cassandra.rpc_min_threads }}
 {% endif %}
 {% if dse_cassandra.rpc_max_threads is undefined %}
 # rpc_max_threads: 2048
-{%- else %}
+{% else %}
 rpc_max_threads: {{ dse_cassandra.rpc_max_threads }}
 {% endif %}
 
@@ -975,7 +975,7 @@ sstable_preemptive_open_interval_in_mb: {{ dse_cassandra.sstable_preemptive_open
 # When unset, the default is 200 Mbps or 25 MB/s.
 {% if dse_cassandra.stream_throughput_outbound_megabits_per_sec is undefined %}
 # stream_throughput_outbound_megabits_per_sec: 200
-{%- else %}
+{% else %}
 stream_throughput_outbound_megabits_per_sec: {{ dse_cassandra.stream_throughput_outbound_megabits_per_sec }}
 {% endif %}
 
@@ -986,7 +986,7 @@ stream_throughput_outbound_megabits_per_sec: {{ dse_cassandra.stream_throughput_
 # When unset, the default is 200 Mbps or 25 MB/s
 {% if dse_cassandra.inter_dc_stream_throughput_outbound_megabits_per_sec is undefined %}
 # inter_dc_stream_throughput_outbound_megabits_per_sec: 200
-{%- else %}
+{% else %}
 inter_dc_stream_throughput_outbound_megabits_per_sec: {{ dse_cassandra.inter_dc_stream_throughput_outbound_megabits_per_sec }}
 {% endif %}
 
@@ -1026,7 +1026,7 @@ cross_node_timeout: {{ dse_cassandra.cross_node_timeout|d(false) }}
 # A value of zero means stream sockets should never time out.
 {% if dse_cassandra.streaming_socket_timeout_in_ms is undefined %}
 # streaming_socket_timeout_in_ms: 86400000
-{%- else %}
+{% else %}
 streaming_socket_timeout_in_ms: {{ dse_cassandra.streaming_socket_timeout_in_ms }}
 {% endif %}
 
@@ -1034,7 +1034,7 @@ streaming_socket_timeout_in_ms: {{ dse_cassandra.streaming_socket_timeout_in_ms 
 # most users should never need to adjust this.
 {% if dse_cassandra.phi_convict_threshold is undefined %}
 # phi_convict_threshold: 8
-{%- else %}
+{% else %}
 phi_convict_threshold: {{ dse_cassandra.phi_convict_threshold }}
 {% endif %}
 
@@ -1221,7 +1221,7 @@ tracetype_repair_ttl: {{ dse_cassandra.tracetype_repair_ttl|d(604800) }}
 # This threshold can be adjusted to minimize logging if necessary
 {% if dse_cassandra.gc_log_threshold_in_ms is undefined %}
 # gc_log_threshold_in_ms: 200
-{%- else %}
+{% else %}
 gc_log_threshold_in_ms: {{ dse_cassandra.gc_log_threshold_in_ms }}
 {% endif %}
 
@@ -1253,7 +1253,7 @@ windows_timer_interval: {{ dse_cassandra.windows_timer_interval|d(1) }}
 # as corrupted.
 {% if dse_cassandra.max_value_size_in_mb is undefined %}
 # max_value_size_in_mb: 256
-{%- else %}
+{% else %}
 max_value_size_in_mb: {{ dse_cassandra.max_value_size_in_mb }}
 {% endif %}
 
@@ -1281,13 +1281,13 @@ otc_coalescing_strategy: {{ dse_cassandra.otc_coalescing_strategy|d('DISABLED') 
 # for coalescing to be enabled.
 {% if dse_cassandra.otc_coalescing_window_us is undefined %}
 # otc_coalescing_window_us: 200
-{%- else %}
+{% else %}
 otc_coalescing_window_us: {{ dse_cassandra.otc_coalescing_window_us }}
 {% endif %}
 
 # Do not try to coalesce messages if we already got that many messages. This should be more than 2 and less than 128.
 {% if dse_cassandra.otc_coalescing_enough_coalesced_messages is undefined %}
 # otc_coalescing_enough_coalesced_messages: 8
-{%- else %}
+{% else %}
 otc_coalescing_enough_coalesced_messages: {{ dse_cassandra.otc_coalescing_enough_coalesced_messages }}
 {% endif %}

@@ -3,7 +3,7 @@ dse_home: /var/lib/cassandra
 dse_saved_caches_directory: "{{ dse_home }}/saved_caches"
 
 # Cassandra setup -- all standard things from cassandra.yaml
-# defaults are in cassandra.yaml.j2
+# defaults are in cassandra.yaml.j2 or cassandra-rackdc.properties.j2
 dse_cassandra:
   dc: DC1
   rack: RAC1
@@ -19,6 +19,9 @@ dse_cassandra:
           # seeds is actually a comma-delimited list of addresses.
           # Ex: "<ip1>,<ip2>,<ip3>"
           - seeds: "127.0.0.1"
+
+# Cassandra env setup
+dse_cassandra_env: {}
 
 # Install options
 dse_install_opscenter: False
