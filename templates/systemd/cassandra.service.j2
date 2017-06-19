@@ -1,0 +1,51 @@
+[Unit]
+Description=DataStax Cassandra
+Wants=remote-fs.target network.target
+After=remote-fs.target network.target
+Documentation=https://docs.datastax.com
+
+[Service]
+PIDFile=/var/run/dse/dse.pid
+User=cassandra
+Group=cassandra
+ExecStart=/etc/init.d/dse start
+ExecStop=/etc/init.d/dse stop
+LimitNPROC=32768
+LimitAS=infinity
+Restart=always
+TimeoutSec=300
+
+# StandardOutput is configured to redirect to journalctl since
+# some error messages may be logged in standard output before
+# elasticsearch logging system is initialized. Elasticsearch
+# stores its logs in /var/log/elasticsearch and does not use
+# journalctl by default. If you also want to enable journalctl
+# logging, you can simply remove the "quiet" option from ExecStart.
+StandardOutput=journal
+StandardError=inherit
+
+# Specifies the maximum file descriptor number that can be opened by this process
+{% if dse_max_open_files is defined %}
+LimitNOFILE={{dse_max_open_files}}
+{% endif %}
+
+# Specifies the maximum number of bytes of memory that may be locked into RAM
+{% if m_lock_enabled %}
+LimitMEMLOCK=infinity
+{% endif %}
+
+# Disable timeout logic and wait until process is stopped
+TimeoutStopSec=0
+
+# SIGTERM signal is used to stop the Java process
+KillSignal=SIGTERM
+
+# Java process is never killed
+SendSIGKILL=no
+
+# When a JVM receives a SIGTERM signal it exits with code 143
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+

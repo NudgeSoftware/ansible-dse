@@ -8,7 +8,7 @@
 
 - name: Create DSE home, hints and saved caches directories
   file:
-    path: "{{ dse_home }}"
+    path: "{{ item }}"
     state: directory
     owner: cassandra
     group: cassandra
@@ -20,7 +20,7 @@
 
 - name: Ensure cassandra data directories exist
   file:
-    path: "{{ dse_home }}"
+    path: "{{ item }}"
     state: directory
     owner: cassandra
     group: cassandra
@@ -29,7 +29,7 @@
 
 - name: Ensure other cassandra directories exist
   file:
-    path: "{{ dse_home }}"
+    path: "{{ item }}"
     state: directory
     owner: cassandra
     group: cassandra

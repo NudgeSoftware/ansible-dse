@@ -73,12 +73,33 @@
   notify:
     - Restart DSE
 
-# - name: Copy Systemd File for Instance
-#   template: src=systemd/cassandra.j2 dest={{instance_sysd_script}} mode=0644 force=yes
-#   when: use_system_d
-#   notify:
-#   - reload systemd configuration
-#   - restart cassandra
+- name: Copy Default File for Instance
+  template: 
+    src: dse.j2 
+    dest: /etc/sysconfig/dse
+    mode: 0644 
+    force: yes
+  notify: 
+    - Restart DSE
+
+- name: Copy Config File for Instance
+  template: 
+    src: dse.conf.j2 
+    dest: /usr/lib/sysctl.d/dse.conf
+    mode: 0644 
+    force: yes
+  notify: 
+    - Restart DSE
+
+- name: Copy Systemd File for Instance
+  template: 
+    src: systemd/cassandra.service.j2 
+    dest: /usr/lib/systemd/system/cassandra.service 
+    mode: 0644 
+    force: yes
+  notify:
+    - reload systemd configuration
+    - Restart DSE
 
 - name: Install agent
   apt:

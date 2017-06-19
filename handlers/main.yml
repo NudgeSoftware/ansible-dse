@@ -1,7 +1,11 @@
+- name: reload systemd configuration
+  command: systemctl daemon-reload
+
 - name: Restart DSE
   service:
     name: dse
     state: restarted
+    enabled: yes
 
 - name: Restart DSE agent
   service:

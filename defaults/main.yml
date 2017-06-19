@@ -1,6 +1,8 @@
 # Locations
 dse_home: /var/lib/cassandra
-dse_saved_caches_directory: "{{ dse_home }}/saved_caches"
+# dse_max_open_files: 
+m_lock_enabled: false
+# dse_max_map_count: 1048575
 
 # Cassandra setup -- all standard things from cassandra.yaml
 # defaults are in cassandra.yaml.j2 or cassandra-rackdc.properties.j2
