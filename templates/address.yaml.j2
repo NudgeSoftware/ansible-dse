@@ -1,3 +1,5 @@
 # stomp_interface: 127.0.0.1
-# use_ssl: 0
 stomp_interface: {{ dse_opscenter_ip }}
+{% if dse_agent_ssl|d(false) %}
+use_ssl: 1
+{% endif %}

@@ -102,7 +102,7 @@
     - Restart DSE
 
 - name: Install agent
-  apt:
+  package:
     name: datastax-agent
     state: present
   when: dse_opscenter_ip is defined and dse_opscenter_ip != False
