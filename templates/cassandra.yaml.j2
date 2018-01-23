@@ -1170,35 +1170,49 @@ request_scheduler: {{ dse_cassandra.request_scheduler|d('org.apache.cassandra.sc
 # the keystore and truststore.  For instructions on generating these files, see:
 # http://download.oracle.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CreateKeystore
 #
+{%- set server_encryption_options = dse_cassandra.server_encryption_options|d({}) -%}
 server_encryption_options:
-    internode_encryption: none
-    keystore: resources/dse/conf/.keystore
-    keystore_password: cassandra
-    truststore: resources/dse/conf/.truststore
-    truststore_password: cassandra
+    internode_encryption: {{ server_encryption_options.internode_encryption|d('none') }}
+    keystore: {{ server_encryption_options.keystore|d('resources/dse/conf/.keystore') }}
+    keystore_password: {{ server_encryption_options.keystore_password|d('cassandra') }}
+    truststore: {{ server_encryption_options.truststore|d('resources/dse/conf/.truststore') }}
+    truststore_password: {{ server_encryption_options.truststore_password|d('cassandra') }}
     # More advanced defaults below:
-    # protocol: TLS
-    # algorithm: SunX509
-    # store_type: JKS
-    # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA]
-    # require_client_auth: false
+    protocol: {{ server_encryption_options.protocol|d('TLS') }}
+    algorithm: {{ server_encryption_options.algorithm|d('SunX509') }}
+    store_type: {{ server_encryption_options.store_type|d('JKS') }}
+    {% if server_encryption_options.cipher_suites is defined -%}
+    cipher_suites: [{{ server_encryption_options.cipher_suites|join(',') }}]
+    {%- endif %}
+    {% if server_encryption_options.require_client_auth is defined -%}
+    require_client_auth: {{ server_encryption_options.require_client_auth }}
+    {%- endif %}
 
 # enable or disable client/server encryption.
+{%- set client_encryption_options = dse_cassandra.client_encryption_options|d({}) -%}
 client_encryption_options:
-    enabled: false
+    enabled: {{ client_encryption_options.enabled|d('false') }}
     # If enabled and optional is set to true encrypted and unencrypted connections are handled.
-    optional: false
-    keystore: resources/dse/conf/.keystore
-    keystore_password: cassandra
-    # require_client_auth: false
+    optional: {{ client_encryption_options.optional|d('false') }}
+    keystore: {{ client_encryption_options.keystore|d('resources/dse/conf/.keystore') }}
+    keystore_password: {{ client_encryption_options.keystore_password|d('cassandra') }}
+    {% if client_encryption_options.require_client_auth is defined -%}
+    require_client_auth: {{ client_encryption_options.require_client_auth }}
     # Set trustore and truststore_password if require_client_auth is true
-    # truststore: resources/dse/conf/.truststore
-    # truststore_password: cassandra
+    {% if client_encryption_options.truststore is defined -%}
+    truststore: {{ client_encryption_options.truststore }}
+    {%- endif %}
+    {% if client_encryption_options.truststore_password is defined -%}
+    truststore_password: {{ client_encryption_options.truststore_password }}
+    {%- endif %}
+    {%- endif %}
     # More advanced defaults below:
-    # protocol: TLS
-    # algorithm: SunX509
-    # store_type: JKS
-    # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA]
+    protocol: {{ client_encryption_options.protocol|d('TLS') }}
+    algorithm: {{ client_encryption_options.algorithm|d('SunX509') }}
+    store_type: {{ client_encryption_options.store_type|d('JKS') }}
+    {% if client_encryption_options.cipher_suites is defined -%}
+    cipher_suites: [{{ client_encryption_options.cipher_suites|join(',') }}]
+    {%- endif %}
 
 # internode_compression controls whether traffic between nodes is
 # compressed.
