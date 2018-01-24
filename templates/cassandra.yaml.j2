@@ -1170,7 +1170,7 @@ request_scheduler: {{ dse_cassandra.request_scheduler|d('org.apache.cassandra.sc
 # the keystore and truststore.  For instructions on generating these files, see:
 # http://download.oracle.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CreateKeystore
 #
-{%- set server_encryption_options = dse_cassandra.server_encryption_options|d({}) -%}
+{% set server_encryption_options = dse_cassandra.server_encryption_options|d({}) %}
 server_encryption_options:
     internode_encryption: {{ server_encryption_options.internode_encryption|d('none') }}
     keystore: {{ server_encryption_options.keystore|d('resources/dse/conf/.keystore') }}
@@ -1181,38 +1181,36 @@ server_encryption_options:
     protocol: {{ server_encryption_options.protocol|d('TLS') }}
     algorithm: {{ server_encryption_options.algorithm|d('SunX509') }}
     store_type: {{ server_encryption_options.store_type|d('JKS') }}
-    {% if server_encryption_options.cipher_suites is defined -%}
+    require_client_auth: {{ server_encryption_options.require_client_auth|d('false') }}
+{% if server_encryption_options.cipher_suites is defined %}
     cipher_suites: [{{ server_encryption_options.cipher_suites|join(',') }}]
-    {%- endif %}
-    {% if server_encryption_options.require_client_auth is defined -%}
-    require_client_auth: {{ server_encryption_options.require_client_auth }}
-    {%- endif %}
+{% endif %}
 
 # enable or disable client/server encryption.
-{%- set client_encryption_options = dse_cassandra.client_encryption_options|d({}) -%}
+{% set client_encryption_options = dse_cassandra.client_encryption_options|d({}) %}
 client_encryption_options:
     enabled: {{ client_encryption_options.enabled|d('false') }}
     # If enabled and optional is set to true encrypted and unencrypted connections are handled.
     optional: {{ client_encryption_options.optional|d('false') }}
     keystore: {{ client_encryption_options.keystore|d('resources/dse/conf/.keystore') }}
     keystore_password: {{ client_encryption_options.keystore_password|d('cassandra') }}
-    {% if client_encryption_options.require_client_auth is defined -%}
+{% if client_encryption_options.require_client_auth is defined %}
     require_client_auth: {{ client_encryption_options.require_client_auth }}
     # Set trustore and truststore_password if require_client_auth is true
-    {% if client_encryption_options.truststore is defined -%}
+{%   if client_encryption_options.truststore is defined %}
     truststore: {{ client_encryption_options.truststore }}
-    {%- endif %}
-    {% if client_encryption_options.truststore_password is defined -%}
+{%-  endif %}
+{%   if client_encryption_options.truststore_password is defined %}
     truststore_password: {{ client_encryption_options.truststore_password }}
-    {%- endif %}
-    {%- endif %}
+{%-  endif %}
+{%- endif %}
     # More advanced defaults below:
     protocol: {{ client_encryption_options.protocol|d('TLS') }}
     algorithm: {{ client_encryption_options.algorithm|d('SunX509') }}
     store_type: {{ client_encryption_options.store_type|d('JKS') }}
-    {% if client_encryption_options.cipher_suites is defined -%}
+{% if client_encryption_options.cipher_suites is defined %}
     cipher_suites: [{{ client_encryption_options.cipher_suites|join(',') }}]
-    {%- endif %}
+{% endif %}
 
 # internode_compression controls whether traffic between nodes is
 # compressed.
