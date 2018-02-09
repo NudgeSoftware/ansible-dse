@@ -4,3 +4,24 @@
     state: present
   notify:
     - Restart Opscenter
+  when: ansible_os_family == "Debian"
+
+- block:
+  - name: Add datastax rpm repo key
+    rpm_key:
+      key: https://rpm.datastax.com/rpm/repo_key
+  - name: Add datastax rpm repo
+    yum_repository:
+      name: dse
+      description: Datastax YUM repo
+      baseurl: "https://rpm.datastax.com/enterprise"
+      username: "{{ dse_repository_login }}"
+      password: "{{ dse_repository_password }}"
+      enabled: yes
+  - name: Install Opscenter
+    yum:
+      name: opscenter
+      state: present
+    notify:
+      - Restart Opscenter
+  when: ansible_os_family == "RedHat"
