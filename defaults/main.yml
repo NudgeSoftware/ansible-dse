@@ -34,3 +34,7 @@ dse_package: dse-full
 dse_agent_memory: 128M
 dse_opscenter_ip: False
 dse_agent_ssl: False
+
+# Datastax opscenter configuration
+dse_opscenter:
+  ssl: False

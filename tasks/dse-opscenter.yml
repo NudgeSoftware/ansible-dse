@@ -25,3 +25,14 @@
     notify:
       - Restart Opscenter
   when: ansible_os_family == "RedHat"
+
+- name: Update opscenterd.conf
+  template:
+    src: opscenterd.conf.j2
+    dest: /etc/opscenter/opscenterd.conf
+    owner: opscenter
+    group: opscenter
+    mode: 0644
+  tags: ["config","dse:config"]
+  notify:
+    - Restart Opscenter
