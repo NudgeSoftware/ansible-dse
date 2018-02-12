@@ -3,3 +3,8 @@ stomp_interface: {{ dse_opscenter_ip }}
 {% if dse_agent_ssl|d(false) %}
 use_ssl: 1
 {% endif %}
+{% if dse_agent is defined %}
+{%   for key in dse_agent.keys() %}
+{{ key }} = {{ dse_agent[key] }}
+{%   endfor %}
+{% endif %}
