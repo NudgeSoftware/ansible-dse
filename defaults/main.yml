@@ -37,4 +37,5 @@ dse_agent_ssl: False
 
 # Datastax opscenter configuration
 dse_opscenter:
-  ssl: False
+  agents:
+    ssl: false

@@ -1,9 +1,9 @@
-[agents]
-{% if dse_opscenter.ssl|d(false) %}
-use_ssl = true
-ssl_keyfile = {{ dse_opscenter.ssl_keyfile|d('/var/lib/opscenter/ssl/opscenter.key') }}
-ssl_certfile = {{ dse_opscenter.ssl_certfile|d('/var/lib/opscenter/ssl/opscenter.der') }}
-agent_keyfile = {{ dse_opscenter.agent_keyfile|d('/var/lib/opscenter/ssl/agentKeyStore') }}
-agent_keyfile_raw = {{ dse_opscenter.agent_keyfile_raw|d('/var/lib/opscenter/ssl/agentKeyStore.key') }}
-agent_certfile = {{ dse_opscenter.agent_certfile|d('/var/lib/opscenter/ssl/agentKeyStore.der') }}
+{% if dse_opscenter is defined -%}
+{%   for stanza in dse_opscenter.keys() %}
+[{{ stanza }}]
+{%   for key in dse_opscenter[stanza].keys() %}
+{{ key }} = {{ dse_opscenter[stanza][key] }}
+{%     endfor %}
+
+{%   endfor %}
 {% endif %}
