@@ -1,0 +1,69 @@
+---
+- name: Check if a config for {{ cluster.name }} already exists
+  uri:
+    url={{ opscenter_url }}/cluster-configs/{{ cluster.name }}
+    method=GET
+    HEADER_opscenter-session={{ session_id|default("") }}
+    status_code=200,201,202,404
+    return_content=yes
+  register: current_config
+
+- name: Register {{ cluster.name }} in OpsCenter
+  uri:
+    url={{ opscenter_url }}/cluster-configs
+    method=POST
+    HEADER_opscenter-session={{ session_id|default("") }}
+    body={{ cluster_def }}
+    body_format=json
+    timeout={{ dse_opscenter_config.add_cluster_timeout|d(30) }}
+    status_code=201
+  when: current_config.status==404
+  register: cluster
+
+- name: Update the config for {{ cluster.name }} in OpsCenter
+  uri:
+    url={{ opscenter_url }}/cluster-configs/{{ cluster.name }}
+    method=PUT
+    HEADER_opscenter-session={{ session_id|default("") }}
+    body={{ cluster_def }}
+    body_format=json
+    timeout={{ dse_opscenter_config.add_cluster_timeout|d(30) }}
+    status_code=204
+  when: current_config.status==200 and cluster_def != current_config.json
+  register: cluster
+
+- name: Get the cluster Datacenters
+  uri:
+    url={{ opscenter_url }}/{{ cluster.name }}/nodes/all/dc
+    method=GET
+    HEADER_opscenter-session={{ session_id|default("") }}
+    status_code=200
+    return_content=yes
+  register: cluster_dcs
+
+- name: Get the repair service status for {{ cluster.name }}
+  uri:
+    url={{ opscenter_url }}/{{ cluster.name }}/services/repair
+    method=GET
+    HEADER_opscenter-session={{ session_id|default("") }}
+    status_code=200
+    return_content=yes
+  register: repair_service
+
+- name: Enable the repair service for {{ cluster.name }} (only if cluster has a single Datacenter)
+  uri:
+    url={{ opscenter_url }}/{{ cluster.name }}/services/repair
+    method=POST
+    HEADER_opscenter-session={{ session_id|default("") }}
+    body=' {"status":true,"time_to_completion":{{ dse_opscenter_config.repair_time_to_completion|int }} }'
+    body_format=raw
+    status_code=200
+  when: repair_service.json.status != true and dse_opscenter_config.repair_service and cluster_dcs.json.values()|unique|count < 2
+
+- name: Disable the repair service for {{ cluster.name }}
+  uri:
+    url={{ opscenter_url }}/{{ cluster.name }}/services/repair
+    method=DELETE
+    HEADER_opscenter-session={{ session_id|default("") }}
+    status_code=200
+  when: repair_service.json.status and dse_opscenter_config.repair_service != true

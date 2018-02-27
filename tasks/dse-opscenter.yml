@@ -37,24 +37,38 @@
   notify:
     - Restart Opscenter
 
-- name: create cluster config folder
-  file:
-    path: /etc/opscenter/clusters
-    owner: opscenter
-    group: opscenter
-    state: directory
-    mode: 0666
-
-- name: Update cluster config
-  template:
-    src: opscenter_cluster.conf.j2
-    dest: /etc/opscenter/clusters/{{cluster.name}}.conf
-    owner: opscenter
-    group: opscenter
-    mode: 0644
-  tags: ["config","dse:config"]
-  with_items: "{{ dse_opscenter_clusters|d([]) }}"
-  loop_control:
-    loop_var: cluster
-  notify:
-    - Restart Opscenter
+- block:
+  - meta: flush_handlers
+  - name: Make sure Opscenter is running
+    service:
+      name: opscenterd
+      state: started
+      enabled: yes
+  - set_fact:
+      opscenter_scheme: http{{ (dse_opscenter.webserver.ssl_port|d(0)|int > 0)|ternary('s','') }}
+      opscenter_port: "{{ dse_opscenter_port|d(dse_opscenter.webserver.ssl_port)|int }}"
+  - name: Wait for Opscenter to start listening on port {{ dse_opscenter_port }}
+    wait_for: 
+      host: "{{ dse_opscenter_config.domain|d(ansible_hostname) }}" 
+      port: "{{ opscenter_port }}"
+  - set_fact:
+      opscenter_url: "{{ opscenter_scheme }}://{{ dse_opscenter_config.domain|d(ansible_hostname) }}:{{ opscenter_port }}"
+      when: dse_opscenter.webserver.ssl_keyfile|d('')|length > 0
+  - name: Login to Opscenter if authentication is enabled
+    uri:
+      url={{ opscenter_url }}/login
+      method=POST
+      body=' {"username":"admin","password":"{{ dse_opscenter_config.admin_password }}"}'
+      body_format=raw
+      status_code=200
+      return_content=yes
+    when: dse_opscenter.authentication.enabled|d(false)
+    register: current_session
+  - set_fact: 
+      session_id: "{{ current_session.json.sessionid }}"
+    when: dse_opscenter.authentication.enabled|d(false)
+  - include: dse-opscenter-cluster.yml
+    with_items: "{{ dse_opscenter_clusters }}"
+    loop_control:
+      loop_var: cluster
+  when: dse_opscenter_clusters|d([])|length > 0
