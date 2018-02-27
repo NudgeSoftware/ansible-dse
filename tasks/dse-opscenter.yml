@@ -36,3 +36,25 @@
   tags: ["config","dse:config"]
   notify:
     - Restart Opscenter
+
+- name: create cluster config folder
+  file:
+    path: /etc/opscenter/clusters
+    owner: opscenter
+    group: opscenter
+    state: directory
+    mode: 0666
+
+- name: Update cluster config
+  template:
+    src: opscenter_cluster.conf.j2
+    dest: /etc/opscenter/clusters/{{cluster.name}}.conf
+    owner: opscenter
+    group: opscenter
+    mode: 0644
+  tags: ["config","dse:config"]
+  with_items: "{{ dse_opscenter_clusters|d([]) }}"
+  loop_control:
+    loop_var: cluster
+  notify:
+    - Restart Opscenter
