@@ -1,0 +1,9 @@
+{
+{%   for stanza in cluster.config.keys() %}
+  "{{ stanza }}": {
+{%   for key in cluster.config[stanza].keys() %}
+    "{{ key }}": "{{ cluster.config[stanza][key] }}"{% if not loop.last %}, {% endif %}
+{%     endfor %}
+  } {% if not loop.last %}, {% endif %}
+{%   endfor %}
+}

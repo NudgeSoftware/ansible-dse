@@ -1,4 +1,22 @@
 ---
+- name: Upload the config for {{ cluster.name }}
+  template: 
+    src: opscenter_cluster.json.j2 
+    dest: /tmp/cluster_json 
+    mode: 0644
+  no_log: "{{ censor_secrets|d(true) }}"
+
+- name: Slurp the config for {{ cluster.name }}
+  slurp: 
+    src: /tmp/cluster_json
+  register: cluster_json_b64
+  no_log: "{{ censor_secrets|d(true) }}"
+  tags:
+    - cluster_create
+
+- set_fact: cluster_json="{{ cluster_json_b64.content|b64decode }}"
+  no_log: "{{ censor_secrets|d(true) }}"
+
 - name: Check if a config for {{ cluster.name }} already exists
   uri:
     url={{ opscenter_url }}/cluster-configs/{{ cluster.name }}
@@ -13,10 +31,11 @@
     url={{ opscenter_url }}/cluster-configs
     method=POST
     HEADER_opscenter-session={{ session_id|default("") }}
-    body={{ cluster_def }}
+    body={{ cluster_json }}
     body_format=json
     timeout={{ dse_opscenter_config.add_cluster_timeout|d(30) }}
     status_code=201
+  no_log: "{{ censor_secrets|d(true) }}"
   when: current_config.status==404
   register: cluster
 
@@ -25,11 +44,12 @@
     url={{ opscenter_url }}/cluster-configs/{{ cluster.name }}
     method=PUT
     HEADER_opscenter-session={{ session_id|default("") }}
-    body={{ cluster_def }}
+    body={{ cluster_json }}
     body_format=json
     timeout={{ dse_opscenter_config.add_cluster_timeout|d(30) }}
     status_code=204
-  when: current_config.status==200 and cluster_def != current_config.json
+  no_log: "{{ censor_secrets|d(true) }}"
+  when: current_config.status==200 and cluster_json != current_config.json
   register: cluster
 
 - name: Get the cluster Datacenters
@@ -39,6 +59,7 @@
     HEADER_opscenter-session={{ session_id|default("") }}
     status_code=200
     return_content=yes
+  no_log: "{{ censor_secrets|d(true) }}"
   register: cluster_dcs
 
 - name: Get the repair service status for {{ cluster.name }}

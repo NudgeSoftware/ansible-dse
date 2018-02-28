@@ -1199,11 +1199,11 @@ client_encryption_options:
     # Set trustore and truststore_password if require_client_auth is true
 {%   if client_encryption_options.truststore is defined %}
     truststore: {{ client_encryption_options.truststore }}
-{%-  endif %}
+{%   endif %}
 {%   if client_encryption_options.truststore_password is defined %}
     truststore_password: {{ client_encryption_options.truststore_password }}
-{%-  endif %}
-{%- endif %}
+{%   endif %}
+{% endif %}
     # More advanced defaults below:
     protocol: {{ client_encryption_options.protocol|d('TLS') }}
     algorithm: {{ client_encryption_options.algorithm|d('SunX509') }}
