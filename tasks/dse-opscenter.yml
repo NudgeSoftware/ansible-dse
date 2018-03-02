@@ -54,18 +54,51 @@
   - set_fact:
       opscenter_url: "{{ opscenter_scheme }}://{{ dse_opscenter_config.domain|d(ansible_hostname) }}:{{ opscenter_port }}"
       when: dse_opscenter.webserver.ssl_keyfile|d('')|length > 0
-  - name: Login to Opscenter if authentication is enabled
-    uri:
-      url={{ opscenter_url }}/login
-      method=POST
-      body=' {"username":"admin","password":"{{ dse_opscenter_config.admin_password }}"}'
-      body_format=raw
-      status_code=200
-      return_content=yes
-    when: dse_opscenter.authentication.enabled|d(false)
-    register: current_session
-  - set_fact: 
-      session_id: "{{ current_session.json.sessionid }}"
+  - block:
+    - name: Login to Opscenter if authentication is enabled
+      uri:
+        url={{ opscenter_url }}/login
+        method=POST
+        body=' {"username":"admin","password":"{{ dse_opscenter_config.admin_password }}"}'
+        body_format=raw
+        status_code=200
+        return_content=yes
+      ignore_errors: yes
+      register: current_session
+    - name: Login to Opscenter with default password
+      uri:
+        url={{ opscenter_url }}/login
+        method=POST
+        body=' {"username":"admin","password":"admin"}'
+        body_format=raw
+        status_code=200
+        return_content=yes
+      when: 
+      - dse_opscenter_config.admin_password != 'admin'
+      - current_session|failed
+      register: default_session
+    - set_fact: 
+        session_id: "{{ default_session.json.sessionid }}"
+      when: 
+      - current_session|failed
+      - default_session|success
+    - name: Change admin password in Opscenter
+      uri:
+        url={{ opscenter_url }}/users/admin
+        method=PUT
+        HEADER_opscenter-session={{ session_id|default("") }}
+        body=' {"old_password":"admin","password":"{{ dse_opscenter_config.admin_password }}","password_2":"{{ dse_opscenter_config.admin_password }}"}'
+        body_format=raw
+        status_code=200
+        return_content=yes
+      when: 
+      - current_session|failed
+      - default_session|success
+      register: default_session
+    - set_fact: 
+        session_id: "{{ current_session.json.sessionid }}"
+      when: 
+      - current_session|success
     when: dse_opscenter.authentication.enabled|d(false)
   - include: dse-opscenter-cluster.yml
     with_items: "{{ dse_opscenter_clusters }}"
