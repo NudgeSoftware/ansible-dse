@@ -1,0 +1,16 @@
+{
+  "first_run_date": "{{dse_opscenter_config.backup.first_run_date|d('2018-01-01')}}",
+  "first_run_time": "{{dse_opscenter_config.backup.first_run_time|d('00:00:00')}}",
+  "timezone": "{{dse_opscenter_config.backup.timezone|d('America/Toronto')}}",
+  "interval": {{dse_opscenter_config.backup.interval|d(1)}},
+  "interval_unit": "{{dse_opscenter_config.backup.interval_unit|d('days')}}",
+  "job_params": {
+    "type": "backup",
+    "alert_on_failure": {{dse_opscenter_config.backup.alert_on_failure|d('false')}},
+    "keyspaces": [],
+    "datacenters": [],
+    "cleanup_age": {{dse_opscenter_config.backup.cleanup_age|d(7)}},
+    "cleanup_age_unit": "{{dse_opscenter_config.backup.cleanup_age_unit|d('days')}}",
+    "destinations": {}
+  }
+}

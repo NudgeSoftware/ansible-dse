@@ -88,3 +88,37 @@
     HEADER_opscenter-session={{ session_id|default("") }}
     status_code=200
   when: repair_service.json.status and dse_opscenter_config.repair_service != true
+
+- block:
+  - name: Upload the backup config for {{ cluster.name }}
+    template: 
+      src: opscenter_backup.json.j2 
+      dest: /tmp/backup_json 
+      mode: 0644
+
+  - name: Slurp the backup config for {{ cluster.name }}
+    slurp: 
+      src: /tmp/backup_json
+    register: backup_json_b64
+
+  - set_fact: backup_json="{{ backup_json_b64.content|b64decode }}"
+
+  - name: Get the backup service status for {{ cluster.name }}
+    uri:
+      url={{ opscenter_url }}/{{ cluster.name }}/job-schedules
+      method=GET
+      HEADER_opscenter-session={{ session_id|default("") }}
+      status_code=200
+      return_content=yes
+    register: current_schedules
+  
+  - name: Enable backup service status for {{ cluster.name }}
+    uri:
+      url={{ opscenter_url }}/{{ cluster.name }}/job-schedules
+      method=POST
+      HEADER_opscenter-session={{ session_id|default("") }}
+      body={{ backup_json }}
+      body_format=json
+      status_code=200,201
+    when: current_schedules.json|map(attribute='job_params')|selectattr('type','equalto','backup')|list|length == 0
+  when: dse_opscenter_config.backup is defined
