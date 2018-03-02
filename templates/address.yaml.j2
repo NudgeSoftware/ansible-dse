@@ -5,6 +5,6 @@ use_ssl: 1
 {% endif %}
 {% if dse_agent is defined %}
 {%   for key in dse_agent.keys() %}
-{{ key }} = {{ dse_agent[key] }}
+{{ key }}: {{ dse_agent[key] }}
 {%   endfor %}
 {% endif %}
