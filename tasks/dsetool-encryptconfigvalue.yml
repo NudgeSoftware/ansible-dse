@@ -13,6 +13,7 @@
       executable: /usr/bin/expect
     become: true
     register: encrypt_value_output
+    no_log: "{{censor_secrets|d(true)}}"
   - name: set encrypted_facts
     set_fact:
       encrypted_values: >
@@ -21,4 +22,5 @@
           })
         }}
     when: encrypt_value_output|success
+    no_log: "{{censor_secrets|d(true)}}"
   when: encrypt_value|d('') != ''
