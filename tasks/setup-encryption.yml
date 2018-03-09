@@ -1,0 +1,154 @@
+---
+- name: Create DSE encryption file if doesn't exist
+  command: >-
+    dsetool createsystemkey 
+      '{{ dse_config_encryption.cipher|d('AES/CBC/PKCS5Padding') }}' 
+      {{ dse_config_encryption.length|d(256) }} 
+      {{ dse_config_encryption.key_name|d('system_key') }}
+  run_once: true
+  delegate_to: "{{ dse_config_encryption.node }}"
+  args:
+    creates: /etc/dse/conf/{{ dse_config_encryption.key_name|d('system_key') }}
+
+- name: grab contents of encryption file from the main node
+  slurp:
+    src: /etc/dse/conf/{{ dse_config_encryption.key_name|d('system_key') }}
+  run_once: true
+  delegate_to: "{{ dse_config_encryption.node }}"
+  register: system_key
+
+- file:
+    path: /etc/dse/conf
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0600
+
+- name: write contents of encryption file to all nodes
+  copy:
+    dest: /etc/dse/conf/{{ dse_config_encryption.key_name|d('system_key') }}
+    content: "{{ system_key.content | b64decode }}"
+    owner: cassandra
+    group: cassandra
+    mode: 0600
+
+- name: Ensure config_encryption_active is on
+  lineinfile:
+    path: /etc/dse/dse.yaml
+    regexp: '^#?config_encryption_active:\s*(true|false).*$'
+    line: 'config_encryption_active: true'
+
+- name: Ensure config_encryption_key_name is set correctly
+  lineinfile:
+    path: /etc/dse/dse.yaml
+    regexp: '^#?config_encryption_key_name:.*$'
+    line: "config_encryption_key_name: {{ dse_config_encryption.key_name|d('system_key') }}"
+
+- name: Install expect
+  yum:
+    name: expect
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- import_tasks: dsetool-encryptconfigvalue.yml
+  vars:
+    encrypt_name: server_keystore_password 
+    encrypt_value: "{{((dse_cassandra|d({})).server_encryption_options|d({})).keystore_password}}"
+
+- import_tasks: dsetool-encryptconfigvalue.yml
+  vars:
+    encrypt_name: server_truststore_password 
+    encrypt_value: "{{((dse_cassandra|d({})).server_encryption_options|d({})).truststore_password}}"
+
+- import_tasks: dsetool-encryptconfigvalue.yml
+  vars:
+    encrypt_name: client_keystore_password 
+    encrypt_value: "{{((dse_cassandra|d({})).client_encryption_options|d({})).keystore_password}}"
+
+- import_tasks: dsetool-encryptconfigvalue.yml
+  vars:
+    encrypt_name: client_keystore_password 
+    encrypt_value: "{{((dse_cassandra|d({})).client_encryption_options|d({})).truststore_password}}"
+
+# - name: encrypt server_encryption_options.keystore_password
+#   shell: |
+#     spawn dsetool encryptconfigvalue
+#     expect "Enter value to encrypt:"
+#     send "{{dse_cassandra.server_encryption_options.keystore_password}}\n"
+#     expect "Enter again to confirm:"
+#     send "{{dse_cassandra.server_encryption_options.keystore_password}}\n"
+#     expect eof
+#     exit 0
+#   args:
+#     executable: /usr/bin/expect
+#   become: true
+#   when: ((dse_cassandra|d({})).server_encryption_options|d({})).keystore_password|d('') != ''
+#   register: encryptconfigvalue_output
+# - name: set encrypted_facts
+#   set_fact:
+#     encrypted_values: >
+#       {{ encrypted_values|combine({
+#           'server_keystore_password': encryptconfigvalue_output.stdout_lines|last
+#         })
+#       }}
+#   when: encryptconfigvalue_output|success
+# - name: encrypt server_encryption_options.truststore_password
+#   shell: 
+#     cmd: |
+#       dsetool encryptconfigvalue <<EOF
+#       {{dse_cassandra.server_encryption_options.truststore_password}}
+#       {{dse_cassandra.server_encryption_options.truststore_password}}
+#       EOF
+#   args:
+#     executable: /bin/bash
+#   become: true
+#   when: ((dse_cassandra|d({})).server_encryption_options|d({})).truststore_password|d('') != ''
+#   register: encryptconfigvalue_output
+# - name: set encrypted_facts
+#   set_fact:
+#     encrypted_values: >
+#       {{ encrypted_values|combine({
+#           'server_truststore_password': encryptconfigvalue_output.stdout|last
+#         })
+#       }}
+#   when: encryptconfigvalue_output|success
+# - name: encrypt client_encryption_options.keystore_password
+#   shell: 
+#     cmd: |
+#       dsetool encryptconfigvalue <<EOF
+#       {{dse_cassandra.client_encryption_options.keystore_password}}
+#       {{dse_cassandra.client_encryption_options.keystore_password}}
+#       EOF
+#   args:
+#     executable: /bin/bash
+#   become: true
+#   when: ((dse_cassandra|d({})).client_encryption_options|d({})).keystore_password|d('') != ''
+#   register: encryptconfigvalue_output
+# - name: set encrypted_facts
+#   set_fact:
+#     encrypted_values: >
+#       {{ encrypted_values|combine({
+#           'client_keystore_password': encryptconfigvalue_output.stdout|last
+#         })
+#       }}
+#   when: encryptconfigvalue_output|success
+# - name: encrypt client_encryption_options.truststore_password
+#   shell: 
+#     cmd: |
+#       dsetool encryptconfigvalue <<EOF
+#       {{dse_cassandra.client_encryption_options.truststore_password}}
+#       {{dse_cassandra.client_encryption_options.truststore_password}}
+#       EOF
+#   args:
+#     executable: /bin/bash
+#   become: true
+#   when: ((dse_cassandra|d({})).client_encryption_options|d({})).truststore_password|d('') != ''
+#   register: encryptconfigvalue_output
+# - name: set encrypted_facts
+#   set_fact:
+#     encrypted_values: >
+#       {{ encrypted_values|combine({
+#           'client_truststore_password': encryptconfigvalue_output.stdout|last
+#         })
+#       }}
+#   when: encryptconfigvalue_output|success

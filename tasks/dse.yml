@@ -37,6 +37,13 @@
 - include: create-folders.yml
   when: dse_install_dse
 
+- set_fact:
+    encrypted_values: {}
+  changed_when: false
+
+- include: setup-encryption.yml
+  when: dse_config_encryption is defined and dse_config_encryption.node|d('') != ''
+
 - name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2

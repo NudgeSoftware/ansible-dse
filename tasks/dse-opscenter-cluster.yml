@@ -14,6 +14,12 @@
   tags:
     - cluster_create
 
+- name: Cleanup tmp config file
+  file:
+    path: /tmp/cluster_json
+    state: absent
+  when: cluster_json_b64|success
+
 - set_fact: cluster_json="{{ cluster_json_b64.content|b64decode }}"
   no_log: "{{ censor_secrets|d(true) }}"
 
@@ -100,6 +106,12 @@
     slurp: 
       src: /tmp/backup_json
     register: backup_json_b64
+
+  - name: Cleanup tmp backup file
+    file:
+      path: /tmp/backup_json
+      state: absent
+    when: backup_json_b64|success
 
   - set_fact: backup_json="{{ backup_json_b64.content|b64decode }}"
 

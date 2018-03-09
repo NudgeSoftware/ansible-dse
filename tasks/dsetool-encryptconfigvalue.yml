@@ -1,0 +1,24 @@
+---
+- block:
+  - name: encrypt {{encrypt_name}}
+    shell: |
+      spawn dsetool encryptconfigvalue
+      expect "Enter value to encrypt:"
+      send "{{encrypt_value}}\n"
+      expect "Enter again to confirm:"
+      send "{{encrypt_value}}\n"
+      expect eof
+      exit 0
+    args:
+      executable: /usr/bin/expect
+    become: true
+    register: encrypt_value_output
+  - name: set encrypted_facts
+    set_fact:
+      encrypted_values: >
+        {{ encrypted_values|combine({
+            encrypt_name: encrypt_value_output.stdout_lines|last
+          })
+        }}
+    when: encrypt_value_output|success
+  when: encrypt_value|d('') != ''

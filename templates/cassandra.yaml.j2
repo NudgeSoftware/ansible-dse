@@ -1174,9 +1174,9 @@ request_scheduler: {{ dse_cassandra.request_scheduler|d('org.apache.cassandra.sc
 server_encryption_options:
     internode_encryption: {{ server_encryption_options.internode_encryption|d('none') }}
     keystore: {{ server_encryption_options.keystore|d('resources/dse/conf/.keystore') }}
-    keystore_password: {{ server_encryption_options.keystore_password|d('cassandra') }}
+    keystore_password: {{ encrypted_values.server_keystore_password|d(server_encryption_options.keystore_password)|d('cassandra') }}
     truststore: {{ server_encryption_options.truststore|d('resources/dse/conf/.truststore') }}
-    truststore_password: {{ server_encryption_options.truststore_password|d('cassandra') }}
+    truststore_password: {{ encrypted_values.server_truststore_password|d(server_encryption_options.truststore_password)|d('cassandra') }}
     # More advanced defaults below:
     protocol: {{ server_encryption_options.protocol|d('TLS') }}
     algorithm: {{ server_encryption_options.algorithm|d('SunX509') }}
@@ -1193,15 +1193,15 @@ client_encryption_options:
     # If enabled and optional is set to true encrypted and unencrypted connections are handled.
     optional: {{ client_encryption_options.optional|d('false') }}
     keystore: {{ client_encryption_options.keystore|d('resources/dse/conf/.keystore') }}
-    keystore_password: {{ client_encryption_options.keystore_password|d('cassandra') }}
+    keystore_password: {{ encrypted_values.client_keystore_password|d(client_encryption_options.keystore_password)|d('cassandra') }}
 {% if client_encryption_options.require_client_auth is defined %}
     require_client_auth: {{ client_encryption_options.require_client_auth }}
     # Set trustore and truststore_password if require_client_auth is true
 {%   if client_encryption_options.truststore is defined %}
     truststore: {{ client_encryption_options.truststore }}
 {%   endif %}
-{%   if client_encryption_options.truststore_password is defined %}
-    truststore_password: {{ client_encryption_options.truststore_password }}
+{%   if encrypted_values.client_truststore_password|d(client_encryption_options.truststore_password) is defined %}
+    truststore_password: {{ encrypted_values.client_truststore_password|d(client_encryption_options.truststore_password) }}
 {%   endif %}
 {% endif %}
     # More advanced defaults below:
