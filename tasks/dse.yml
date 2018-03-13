@@ -44,6 +44,13 @@
 - include: setup-encryption.yml
   when: dse_config_encryption is defined and dse_config_encryption.node|d('') != ''
 
+- name: Ensure config_encryption_active is off
+  lineinfile:
+    path: /etc/dse/dse.yaml
+    regexp: '^#?config_encryption_active:\s*(true|false).*$'
+    line: 'config_encryption_active: false'
+  when: dse_config_encryption is undefined
+
 - name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2
@@ -106,6 +113,22 @@
     force: yes
   notify:
     - reload systemd configuration
+    - Restart DSE
+
+- name: create config folder
+  file:
+    path: "{{ dse_user_home|d('~') }}/.cassandra"
+    state: directory
+    owner: cassandra
+    group: cassandra
+    mode: 0755
+
+- name: setup rc file for cqlsh
+  template: 
+    src: cqlshrc.j2 
+    dest: "{{ dse_user_home|d('~') }}/.cassandra/cqlshrc"
+    mode: 0644 
+  notify: 
     - Restart DSE
 
 - name: Install agent

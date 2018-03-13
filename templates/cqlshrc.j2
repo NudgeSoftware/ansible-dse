@@ -1,0 +1,9 @@
+{% if dse_cqlshrc is defined -%}
+{%   for stanza in dse_cqlshrc.keys() %}
+[{{ stanza }}]
+{%   for key in dse_cqlshrc[stanza].keys() %}
+{{ key }} = {{ dse_cqlshrc[stanza][key] }}
+{%     endfor %}
+
+{%   endfor %}
+{% endif %}
