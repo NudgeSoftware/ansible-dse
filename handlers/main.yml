@@ -13,6 +13,7 @@
     state: restarted
 
 - name: Restart Opscenter
-  service:
-    name: opscenterd
-    state: restarted
+  command: /sbin/service opscenterd restart
+  become: true
+  args:
+    warn: false
