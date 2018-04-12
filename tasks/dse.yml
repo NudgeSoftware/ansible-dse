@@ -51,6 +51,15 @@
     line: 'config_encryption_active: false'
   when: dse_config_encryption is undefined
 
+- name: Ensure spark is on/off appropriately
+  lineinfile:
+    path: /etc/default/dse
+    regexp: '^#?SPARK_ENABLED=.*$'
+    line: SPARK_ENABLED={{ (dse_spark_enabled|d(false))|ternary(1,0) }}
+  tags: ["config","dse:config"]
+  notify:
+    - Restart DSE
+
 - name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2
