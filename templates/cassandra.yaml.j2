@@ -492,7 +492,7 @@ seed_provider:
 # On the other hand, since writes are almost never IO bound, the ideal
 # number of "concurrent_writes" is dependent on the number of cores in
 # your system; (8 * number_of_cores) is a good rule of thumb.
-{%- set number_of_cores = (ansible_processor_vcpus | int > 0) | ternary (ansible_processor_vcpus, 1) %}
+{% set number_of_cores = (ansible_processor_vcpus | int > 0) | ternary (ansible_processor_vcpus, 1) %}
 concurrent_reads:  {{ dse_cassandra.concurrent_reads|d(number_of_cores * 8) }}
 concurrent_writes:  {{ dse_cassandra.concurrent_writes|d(number_of_cores * 8) }}
 concurrent_counter_writes:  {{ dse_cassandra.concurrent_counter_writes|d(number_of_cores * 8) }}
