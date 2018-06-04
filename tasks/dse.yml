@@ -60,6 +60,21 @@
   notify:
     - Restart DSE
 
+- name: Ensure spark TLS is setup appropriately
+  blockinfile:
+    path: /usr/share/dse/spark/spark-jobserver/dse.conf
+    marker: "# {mark} ssl ANSIBLE MANAGED BLOCK"
+    block: |
+      spray.can.server {                                     
+        ssl-encryption = on                                  
+        keystore = {{dse_cassandra.server_encryption_options.keystore}}
+        keystorePW = {{dse_cassandra.server_encryption_options.keystore_password}}
+      }
+  when: dse_spark_enabled|d(false) and ((dse_cassandra|d({})).server_encryption_options|d({})).keystore_password is defined
+  tags: ["config","dse:config"]
+  notify:
+    - Restart DSE
+
 - name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2
