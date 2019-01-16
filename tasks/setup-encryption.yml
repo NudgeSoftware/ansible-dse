@@ -5,15 +5,13 @@
       '{{ dse_config_encryption.cipher|d('AES/CBC/PKCS5Padding') }}' 
       {{ dse_config_encryption.length|d(256) }} 
       {{ dse_config_encryption.key_name|d('system_key') }}
-  run_once: true
-  delegate_to: "{{ dse_config_encryption.node }}"
+  when: inventory_hostname == dse_config_encryption.node
   args:
     creates: /etc/dse/conf/{{ dse_config_encryption.key_name|d('system_key') }}
 
 - name: grab contents of encryption file from the main node
   slurp:
     src: /etc/dse/conf/{{ dse_config_encryption.key_name|d('system_key') }}
-  run_once: true
   delegate_to: "{{ dse_config_encryption.node }}"
   register: system_key
 
