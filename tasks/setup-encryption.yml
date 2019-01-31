@@ -12,8 +12,8 @@
 - name: grab contents of encryption file from the main node
   slurp:
     src: /etc/dse/conf/{{ dse_config_encryption.key_name|d('system_key') }}
-  delegate_to: "{{ dse_config_encryption.node }}"
   register: system_key
+  when: inventory_hostname == dse_config_encryption.node
 
 - file:
     path: /etc/dse/conf
@@ -25,7 +25,7 @@
 - name: write contents of encryption file to all nodes
   copy:
     dest: /etc/dse/conf/{{ dse_config_encryption.key_name|d('system_key') }}
-    content: "{{ system_key.content | b64decode }}"
+    content: "{{ hostvars[ dse_config_encryption.node ].system_key.content | b64decode }}"
     owner: cassandra
     group: cassandra
     mode: 0660
