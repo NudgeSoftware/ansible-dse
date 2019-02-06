@@ -34,14 +34,14 @@
       - Restart DSE
   when: ansible_os_family == "RedHat"
 
-- include: create-folders.yml
+- include_tasks: create-folders.yml
   when: dse_install_dse
 
 - set_fact:
     encrypted_values: {}
   changed_when: false
 
-- include: setup-encryption.yml
+- include_tasks: setup-encryption.yml
   when: dse_config_encryption is defined and dse_config_encryption.node|d('') != ''
 
 - name: Ensure config_encryption_active is off

@@ -100,7 +100,7 @@
       when: 
       - current_session|success
     when: dse_opscenter.authentication.enabled|d(false)
-  - include: dse-opscenter-cluster.yml
+  - include_tasks: dse-opscenter-cluster.yml
     with_items: "{{ dse_opscenter_clusters }}"
     loop_control:
       loop_var: cluster
