@@ -2,7 +2,7 @@
   fail:
     msg: "Sorry, {{ item }} must be set"
   when: item|d(false) == false
-  with_items:
+  loop:
     - dse_repository_login
     - dse_repository_password
 
