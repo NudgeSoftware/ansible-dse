@@ -75,6 +75,18 @@
   notify:
     - Restart DSE
 
+- name: Update dse.yaml
+  template:
+    src: dse.yaml.j2
+    dest: /etc/dse/dse.yaml
+    backup: yes
+    owner: cassandra
+    group: cassandra
+    mode: 0644
+  tags: ["config","dse:config"]
+  notify:
+    - Restart DSE
+
 - name: Update cassandra.yaml
   template:
     src: cassandra.yaml.j2
