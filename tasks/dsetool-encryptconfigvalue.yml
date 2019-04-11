@@ -21,6 +21,6 @@
             encrypt_name: encrypt_value_output.stdout_lines|last
           })
         }}
-    when: encrypt_value_output|success
+    when: encrypt_value_output is success
     no_log: "{{censor_secrets|d(true)}}"
   when: encrypt_value|d('') != ''
