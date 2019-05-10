@@ -37,6 +37,18 @@
 - include_tasks: create-folders.yml
   when: dse_install_dse
 
+- name: Update dse.yaml
+  template:
+    src: dse.yaml.j2
+    dest: /etc/dse/dse.yaml
+    backup: yes
+    owner: cassandra
+    group: cassandra
+    mode: 0644
+  tags: ["config","dse:config"]
+  notify:
+    - Restart DSE
+    
 - set_fact:
     encrypted_values: {}
   changed_when: false
@@ -71,18 +83,6 @@
         keystorePW = {{dse_cassandra.server_encryption_options.keystore_password}}
       }
   when: dse_spark_enabled|d(false) and ((dse_cassandra|d({})).server_encryption_options|d({})).keystore_password is defined
-  tags: ["config","dse:config"]
-  notify:
-    - Restart DSE
-
-- name: Update dse.yaml
-  template:
-    src: dse.yaml.j2
-    dest: /etc/dse/dse.yaml
-    backup: yes
-    owner: cassandra
-    group: cassandra
-    mode: 0644
   tags: ["config","dse:config"]
   notify:
     - Restart DSE
