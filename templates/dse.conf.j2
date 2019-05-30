@@ -1,3 +1,36 @@
-{% if dse_max_map_count is defined %}
-vm.max_map_count = {{ dse_max_map_count }}
+{% set vm = dse_performance.vm|d({}) %}
+{% if vm.max_map_count is defined %}
+vm.max_map_count = {{ vm.max_map_count }}
+{% endif %}
+
+{% set net = dse_performance.net|d({}) %}
+{% if net.ipv4_tcp_keepalive_time is defined %}
+net.ipv4.tcp_keepalive_time = {{ net.ipv4_tcp_keepalive_time }}
+{% endif %}
+{% if net.ipv4_tcp_keepalive_probes is defined %}
+net.ipv4.tcp_keepalive_probes = {{ net.ipv4_tcp_keepalive_probes }}
+{% endif %}
+{% if net.ipv4_tcp_keepalive_intvl is defined %}
+net.ipv4.tcp_keepalive_intvl = {{ net.ipv4_tcp_keepalive_intvl }}
+{% endif %}
+{% if net.core_rmem_max is defined %}
+net.core.rmem_max = {{ net.core_rmem_max }}
+{% endif %}
+{% if net.core_wmem_max is defined %}
+net.core.wmem_max = {{ net.core_wmem_max }}
+{% endif %}
+{% if net.core_rmem_default is defined %}
+net.core.rmem_default = {{ net.core_rmem_default }}
+{% endif %}
+{% if net.core_wmem_default is defined %}
+net.core.wmem_default = {{ net.core_wmem_default }}
+{% endif %}
+{% if net.core_optmem_max is defined %}
+net.core.optmem_max = {{ net.core_optmem_max }}
+{% endif %}
+{% if net.ipv4_tcp_rmem is defined %}
+net.ipv4.tcp_rmem = {{ net.ipv4_tcp_rmem }}
+{% endif %}
+{% if net.ipv4_tcp_wmem is defined %}
+net.ipv4.tcp_wmem = {{ net.ipv4_tcp_wmem }}
 {% endif %}

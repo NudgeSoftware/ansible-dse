@@ -736,7 +736,7 @@ native_transport_max_frame_size_in_mb: {{ dse_cassandra.native_transport_max_fra
 # set native_transport_broadcast_address to a value other than 0.0.0.0.
 #
 # For security reasons, you should not expose this port to the internet.  Firewall it if needed.
-native_transport_address: {{ dse_cassandra.native_transport_port|d('localhost') }}
+native_transport_address: {{ dse_cassandra.native_transport_address }}
 
 # Set native_transport_address OR native_transport_interface, not both. Interfaces must correspond
 # to a single address, IP aliasing is not supported.

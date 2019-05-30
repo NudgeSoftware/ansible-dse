@@ -12,7 +12,9 @@
       state: present
     notify:
       - Restart DSE
-  when: ansible_os_family == "Debian"
+  when: 
+   - dse_install_dse == "True" 
+   - ansible_os_family == "Debian"
 
 - block:
   - name: Add datastax rpm repo key
@@ -32,10 +34,12 @@
       state: present
     notify:
       - Restart DSE
-  when: ansible_os_family == "RedHat"
+  when: 
+   - dse_install_dse == "True" 
+   - ansible_os_family == "RedHat"
 
 - include_tasks: create-folders.yml
-  when: dse_install_dse
+#  when: dse_install_dse == "True"
 
 - name: Update dse.yaml
   template:
@@ -48,7 +52,7 @@
   tags: ["config","dse:config"]
   notify:
     - Restart DSE
-    
+
 - set_fact:
     encrypted_values: {}
   changed_when: false
