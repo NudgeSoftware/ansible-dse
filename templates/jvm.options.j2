@@ -206,6 +206,11 @@
 #-Xmx4G
 {% endif %}
 
+{% if dse_io_aio_enabled|d('') != '' %}
+# disable AIO to decrease consumption of the direct memory
+-Ddse.io.aio.enabled={{ dse_io_aio_enabled }}
+{% endif %}
+
 # Young generation size is automatically calculated by cassandra-env
 # based on this formula: min(100 * num_cores, 1/4 * heap size)
 #
