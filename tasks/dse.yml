@@ -13,7 +13,7 @@
     notify:
       - Restart DSE
   when: 
-   - dse_install_dse == "True" 
+   - dse_install_dse|bool == true 
    - ansible_os_family == "Debian"
 
 - block:
@@ -35,11 +35,11 @@
     notify:
       - Restart DSE
   when: 
-   - dse_install_dse == "True" 
+   - dse_install_dse|bool == true
    - ansible_os_family == "RedHat"
 
 - include_tasks: create-folders.yml
-#  when: dse_install_dse == "True"
+  when: dse_install_dse|bool == true
 
 - name: Update dse.yaml
   template:
