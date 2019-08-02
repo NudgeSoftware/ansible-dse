@@ -4,7 +4,7 @@
     - dse:opscenter
 
 - include_tasks: dse.yml
-  when: dse_install_dse is defined #and dse_install_dse != False
+  when: dse_install_dse is defined and dse_install_dse|bool == true
   tags:
     - dse
 
