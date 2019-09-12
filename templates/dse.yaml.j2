@@ -61,9 +61,9 @@
 #                authentication is successful, the user is logged in. If the
 #                authentication fails, an authentication error is returned. If no
 #                credentials are passed, the user is logged in as anonymous
-# authentication_options:
-#     enabled: false
-#     default_scheme: internal
+authentication_options:
+    enabled: true
+    default_scheme: internal
 #     other_schemes:
 #     scheme_permissions: false
 #     allow_digest_with_kerberos: true
@@ -81,8 +81,8 @@
 #              using the GRANT ROLE and REVOKE ROLE statements
 #   ldap - the granting and revoking of roles is managed by an external
 #          LDAP server configured using the ldap_options.
-# role_management_options:
-#     mode: internal
+role_management_options:
+    mode: internal
 
 ##########################
 # Authorization options
@@ -106,10 +106,10 @@
 #
 # allow_row_level_security - To use row level security, set to true for the entire system.
 #                            Use the same setting on all nodes.
-# authorization_options:
-#     enabled: false
-#     transitional_mode: disabled
-#     allow_row_level_security: false
+authorization_options:
+    enabled: true
+    transitional_mode: normal
+    allow_row_level_security: true
 
 ##########################
 # Kerberos options
